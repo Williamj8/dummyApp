@@ -1,0 +1,50 @@
+{
+    "div": [
+        {
+            "value": "11",
+            "viewValue": "Div 1"
+        },
+        {
+            "value": "22",
+            "viewValue": "Div 2"
+        },
+        {
+            "value": "44",
+            "viewValue": "Div 3"
+        },
+        {
+            "value": "88",
+            "viewValue": "Div 8"
+        }
+    ],
+    "flags": [
+        {
+            "flagName": "isMyFlag",
+            "flagViewName": "My Flag",
+            "flagLevel": "sFeature"
+        },
+        {
+            "flagName": "isMyFlag1",
+            "flagViewName": "My Flag1",
+            "flagLevel": "sFeature"
+        },
+        {
+            "flagName": "isMyFlag2",
+            "flagViewName": "My Flag2",
+            "flagLevel": "root"
+        },
+        {
+            "flagName": "isMyFlag4",
+            "flagViewName": "My Flag4",
+            "flagLevel": "root"
+        }
+    ],
+    "textField": [
+        {
+            "textName": "txt1",
+            "textViewName": "tXt 1",
+            "textLevel": "root",
+            "textType": "integer"
+        }
+    ]
+}

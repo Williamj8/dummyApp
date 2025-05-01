@@ -1,0 +1,30 @@
+{
+    "selectAll": false,
+    "divCode": null,
+    "divName": null,
+    "idList": [
+        "1"
+    ],
+    "flags": [
+        {
+            "flagName": "isMyFlag",
+            "flagViewName": "My Flag",
+            "flagLevel": "sFeature",
+            "flagValue": false
+        }
+    ],
+    "tpl": [],
+    "editLevel": "",
+    "tplP": [],
+    "intra": {
+        "hours": null,
+        "util": null,
+        "item": null
+    },
+    "slow": {
+        "risk": null,
+        "highrisk": null,
+        "lowrisk": null
+    },
+    "textField": []
+}
