@@ -1,9 +1,10 @@
-// DropdownInputCard.tsx
 import React, { useEffect, useState, useRef } from 'react';
-import { Button, message } from 'antd';
+import { Card, Row, Col, Select, Tag, Button, message } from 'antd';
 import axios from 'axios';
-import DropdownInput from './input';
+import InputComponent from './input';
 import StoreTable from './storeTable';
+
+const { Option } = Select;
 
 interface DivType {
   value: string;
@@ -18,40 +19,63 @@ interface FlagType {
 }
 
 const DropdownInputCard: React.FC = () => {
+  const [dropdownData, setDropdownData] = useState<DivType[]>([]);
   const [selectedDiv, setSelectedDiv] = useState<DivType | null>(null);
+  const [hasFlagChanges, setHasFlagChanges] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [idList, setIdList] = useState<number[]>([]);
   const [flags, setFlags] = useState<FlagType[]>([]);
   const [flagMap, setFlagMap] = useState<Record<string, boolean | null>>({});
   const [hasChanges, setHasChanges] = useState(false);
+  const [loading, setLoading] = useState(false);
   const initialFlagValues = useRef<Record<string, boolean | null>>({});
 
   useEffect(() => {
-    axios.get('/api/storeGet.json').then((res) => {
-      setFlags(res.data.flags);
-      
-      // Initialize flag map and store initial values
-      const initialMap: Record<string, boolean | null> = {};
-      res.data.flags.forEach((flag: FlagType) => {
-        initialMap[flag.flagName] = flag.flagValue ?? null;
-      });
-      setFlagMap(initialMap);
-      initialFlagValues.current = {...initialMap};
-    }).catch(() => {
-      message.error('Failed to load data');
-    });
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get('/api/storeGet.json');
+        setDropdownData(response.data.div);
+        setFlags(response.data.flags);
+
+        // Initialize flag map
+        const initialMap: Record<string, boolean | null> = {};
+        response.data.flags.forEach((flag: FlagType) => {
+          initialMap[flag.flagName] = flag.flagValue ?? null;
+        });
+        setFlagMap(initialMap);
+        initialFlagValues.current = { ...initialMap };
+      } catch (error) {
+        message.error('Failed to load data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
+  // New effect to check for flag changes
+  useEffect(() => {
+    const changesExist = Object.keys(flagMap).some(
+      key => flagMap[key] !== initialFlagValues.current[key]
+    );
+    setHasFlagChanges(changesExist);
+  }, [flagMap]);
+
   const handleSelectDiv = (value: string) => {
-    if (value) {
-      setSelectedDiv({
-        value: value.toLowerCase().replace(/\s+/g, '-'),
-        viewValue: value
-      });
-      setIdList([]); // clear input
-    } else {
-      setSelectedDiv(null);
+    const selected = dropdownData.find(item => item.value === value);
+    if (selected) {
+      setSelectedDiv(selected);
+      setIdList([]); // Clear any existing IDs when selecting from dropdown
+      setInputValue(''); // Clear input field
+      setHasChanges(true);
     }
+  };
+
+  const handleClearDiv = () => {
+    setSelectedDiv(null);
+    checkForChanges();
   };
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -61,6 +85,8 @@ const DropdownInputCard: React.FC = () => {
       if (!isNaN(num)) {
         if (!idList.includes(num)) {
           setIdList([...idList, num]);
+          setSelectedDiv(null)
+          setHasChanges(true);
         } else {
           message.warning('Only unique numbers are allowed');
         }
@@ -73,22 +99,24 @@ const DropdownInputCard: React.FC = () => {
 
   const removeId = (id: number) => {
     setIdList(idList.filter(i => i !== id));
+    checkForChanges();
   };
 
   const handleFlagChange = (flagName: string, value: string) => {
     const parsedValue = value === 'on' ? true : value === 'off' ? false : null;
-    const newFlagMap = { ...flagMap, [flagName]: parsedValue };
-    setFlagMap(newFlagMap);
-    
-    // Check if any flag has changed from its initial value
-    const changesExist = Object.keys(newFlagMap).some(key => 
-      newFlagMap[key] !== initialFlagValues.current[key]
+    setFlagMap(prev => ({ ...prev, [flagName]: parsedValue }));
+    checkForChanges();
+  };
+
+  const checkForChanges = () => {
+    const flagChanges = Object.keys(flagMap).some(
+      key => flagMap[key] !== initialFlagValues.current[key]
     );
-    setHasChanges(changesExist);
+    const otherChanges = !!selectedDiv || idList.length > 0;
+    setHasChanges(flagChanges || otherChanges);
   };
 
   const handleUpdate = () => {
-    // Only include changed flags in the payload
     const changedFlags = flags
       .filter(flag => flagMap[flag.flagName] !== initialFlagValues.current[flag.flagName])
       .map(flag => ({
@@ -102,18 +130,13 @@ const DropdownInputCard: React.FC = () => {
       divName: selectedDiv?.viewValue || null,
       idList: idList.map(String),
       flags: changedFlags,
-      tpl: [],
-      tplP: [],
-      editLevel: '',
-      intra: { hours: null, util: null, item: null },
-      slow: { risk: null, highrisk: null, lowrisk: null },
-      textField: []
+      // ... other payload fields
     };
 
     axios.post('/api/storePayload.json', payload)
       .then(() => {
         message.success('Updated successfully');
-        initialFlagValues.current = {...flagMap};
+        initialFlagValues.current = { ...flagMap };
         setHasChanges(false);
       })
       .catch(() => message.error('Failed to update'));
@@ -121,31 +144,62 @@ const DropdownInputCard: React.FC = () => {
 
   return (
     <>
-      <DropdownInput
-        dropdownApiUrl="/api/storeGet.json"
-        dropdownApiDataPath="div"
-        dropdownPlaceholder="Select division"
-        inputPlaceholder="Enter numeric IDs"
-        onDropdownSelect={handleSelectDiv}
-        onInputChange={setInputValue}
-        onInputKeyDown={handleInputKeyDown}
-        onRemoveId={removeId}
-        selectedItem={selectedDiv}
-        inputValue={inputValue}
-        idList={idList}
-        inputDisabled={!!selectedDiv}
-      />
+      <Card style={{ width: '100%' }}>
+        <Row gutter={16}>
+          <Col span={10}>
+            {selectedDiv ? (
+              <Tag closable onClose={handleClearDiv}>
+                {selectedDiv.viewValue}
+              </Tag>
+            ) : (
+              <Select
+                style={{ width: '100%' }}
+                placeholder={loading ? 'Loading...' : 'Select division'}
+                loading={loading}
+                onChange={handleSelectDiv}
+                showSearch
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.children as unknown as string).toLowerCase().includes(input.toLowerCase())
+                }
+                disabled={idList.length > 0}
+              >
+                {dropdownData.map(item => (
+                  <Option key={item.value} value={item.value}>
+                    {item.viewValue}
+                  </Option>
+                ))}
+              </Select>
+            )}
+          </Col>
+          <Col span={14}>
+            <InputComponent
+              placeholder="Enter numeric IDs"
+              value={inputValue}
+              idList={idList}
+              onChange={setInputValue}
+              onKeyDown={handleInputKeyDown}
+              onRemoveId={removeId}
+              disabled={!!selectedDiv}
+            />
+          </Col>
+        </Row>
+      </Card>
 
-      <Button 
-        type="primary" 
-        onClick={handleUpdate} 
+      <Button
+        type="primary"
+        onClick={handleUpdate}
         style={{ margin: '16px 0' }}
-        disabled={!hasChanges}
+        disabled={!hasFlagChanges}
       >
         Update
       </Button>
 
-      <StoreTable flags={flags} flagMap={flagMap} onFlagChange={handleFlagChange} />
+      <StoreTable
+        flags={flags}
+        flagMap={flagMap}
+        onFlagChange={handleFlagChange}
+      />
     </>
   );
 };
