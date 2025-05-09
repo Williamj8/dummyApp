@@ -1,5 +1,5 @@
 import { Form } from 'antd';
-import './style.css'
+import './style.css';
 import { useState } from 'react';
 
 function FormComponent() {

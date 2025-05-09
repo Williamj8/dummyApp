@@ -37,14 +37,121 @@
             "flagName": "isMyFlag4",
             "flagViewName": "My Flag4",
             "flagLevel": "root"
+        },
+        {
+            "flagName": "isGFlFagEnabled",
+            "flagViewName": "G1 Flag",
+            "flagLevel": "sFeature"
+        },
+        {
+            "flagName": "isGF2agEnabled",
+            "flagViewName": "G2 Flag",
+            "flagLevel": "root"
+        },
+        {
+            "flagName": "is3PFlagEnabled",
+            "flagViewName": "3P Flag",
+            "flagLevel": "sFeature"
+        },
+        {
+            "flagName": "isHlagEnabled",
+            "flagViewName": "H1 Flag",
+            "flagLevel": "root"
+        },
+        {
+            "flagName": "isA2Enabled",
+            "flagViewName": "A2 Flag",
+            "flagLevel": "sFeature"
+        },
+        {
+            "flagName": "isZTECEnabled",
+            "flagViewName": "Z Tech Flag",
+            "flagLevel": "sFeature"
+        },
+        {
+            "flagName": "isBBFlagEnabled",
+            "flagViewName": "BB PPR Flag",
+            "flagLevel": "sFeature"
+        },
+        {
+            "flagName": "is3P1FlagEnabled",
+            "flagViewName": "3P1 Flag",
+            "flagLevel": "root"
+        },
+        {
+            "flagName": "isProFlagEnabled",
+            "flagViewName": "Pro Flag",
+            "flagLevel": "sFeature"
+        },
+        {
+            "flagName": "isXFlagEnabled",
+            "flagViewName": "X Flag",
+            "flagLevel": "sFeature"
+        },
+        {
+            "flagName": "isWfcFlagEnabled",
+            "flagViewName": "WFC",
+            "flagLevel": "sFeature"
+        },
+        {
+            "flagName": "isUFOFlagEnabled",
+            "flagViewName": "UFO Flag",
+            "flagLevel": "sFeature"
+        },
+        {
+            "flagName": "isOSSFlagEnabled",
+            "flagViewName": "Oss Flag",
+            "flagLevel": "sFeature"
+        },
+        {
+            "flagName": "isPipSpFlagEnabled",
+            "flagViewName": "PIP SP",
+            "flagLevel": "sFeature"
+        },
+        {
+            "flagName": "isDogFlagEnabled",
+            "flagViewName": "Dog Flag",
+            "flagLevel": "sFeature"
+        },
+        {
+            "flagName": "isStrFlagEnabled",
+            "flagViewName": "Str Flag",
+            "flagLevel": "sFeature"
+        },
+        {
+            "flagName": "isOAmandaFlagEnabled",
+            "flagViewName": "OR Amanda",
+            "flagLevel": "sFeature"
+        },
+        {
+            "flagName": "isJTOFlagEnabled",
+            "flagViewName": "JTO Flag",
+            "flagLevel": "sFeature"
+        },
+        {
+            "flagName": "isTRFlagEnabled",
+            "flagViewName": "TR Flag",
+            "flagLevel": "sFeature"
         }
     ],
     "textField": [
         {
-            "textName": "txt1",
-            "textViewName": "tXt 1",
+            "textName": "displayDays",
+            "textViewName": "display Days",
             "textLevel": "root",
-            "textType": "integer"
+            "textType": "Integer"
+        },
+        {
+            "textName": "largeCap",
+            "textViewName": "Large Cap",
+            "textLevel": "root",
+            "textType": "Integer"
+        },
+        {
+            "textName": "largeThreshold",
+            "textViewName": "Large Threshold",
+            "textLevel": "root",
+            "textType": "Integer"
         }
     ]
 }

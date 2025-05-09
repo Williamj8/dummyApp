@@ -26,5 +26,7 @@
         "highrisk": null,
         "lowrisk": null
     },
-    "textField": []
+    "textField": [],
+    "wfcId": ""
+
 }
