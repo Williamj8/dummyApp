@@ -1,12 +1,27 @@
 .container {
   display: flex;
   gap: 16px;
+  height: 100vh; /* Ensure container takes full viewport height */
 }
 
 .cardContainer {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative; /* Needed for sticky positioning context */
 }
 
+/* Add this new rule for the Card header wrapper */
+.cardContainer .ant-card-head {
+  position: sticky;
+  top: -16px;
+  z-index: 10;
+  background: white;
+  padding: 17px 0px;
+}
+
+/* Keep all your existing styles below exactly as they are */
 .cardHeader {
   display: flex;
   justify-content: space-between;
@@ -14,7 +29,8 @@
 }
 
 .cardBody {
-  max-height: 25em;
+  max-height: calc(100% - 57px); /* Adjust based on header height */
+  min-height: 25em;
   overflow-y: auto;
   padding: 16px;
 }
@@ -25,10 +41,9 @@
 }
 
 .flagName {
-  width: 50%; /* Takes exactly half */
-  padding-right: 8px; /* Small gap between name and select */
+  width: 50%;
+  padding-right: 8px;
 }
-
 
 .flagSelect {
   width: 50%;
@@ -47,8 +62,6 @@
   padding: 8px 0;
 }
 
-
-/* Button styling */
 .flagName .ant-btn-link {
   padding: 0;
   height: auto;
