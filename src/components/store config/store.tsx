@@ -238,13 +238,16 @@ const DropdownInputCard: React.FC = () => {
     }
 
       //  textField payload
-  const textFieldPayload = textFields.map(field => ({
-    textName: field.textName,
-    textViewName: field.textViewName,
-    textLevel: field.textLevel,
-    textType: field.textType,
-    textValue: values[field.textName]?.toString() || " " // Empty string becomes single space
-  }));
+      const formValues = form.getFieldsValue();
+
+      const textFieldPayload = textFields.map(field => ({
+        textName: field.textName,
+        textViewName: field.textViewName,
+        textLevel: field.textLevel,
+        textType: field.textType,
+        textValue: formValues[field.textName]?.toString() || ''
+      }));
+      
   
     const changedFlags = flags
       .filter(flag => flagMap[flag.flagName] !== initialFlagValues.current[flag.flagName])
