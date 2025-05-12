@@ -108,20 +108,16 @@ items: (_: any, value: number) => {
 
 //  ---------------------------Store Bulk txt fld-------------------------------------------------------
 
-
-
-interface FieldValidationConfig {
+interface FieldConfig {
   textViewName: string;
   min?: number;
   max?: number;
   required?: boolean;
 }
 
-export const getFieldValidationRules = (
-  field: FieldValidationConfig
-): Rule[] => {
+export const getFieldValidationRules = (field: FieldConfig): Rule[] => {
   const rules: Rule[] = [];
-
+  
   if (field.required) {
     rules.push({
       required: true,
@@ -129,14 +125,26 @@ export const getFieldValidationRules = (
     });
   }
 
-  if (field.min !== undefined || field.max !== undefined) {
-    rules.push({
-      type: 'number',
-      min: field.min,
-      max: field.max,
-      message: `${field.textViewName} must be between ${field.min} and ${field.max}`,
-    });
-  }
+  rules.push({
+    validator: (_, value) => {
+      if (!value) return Promise.resolve();
+      
+      if (isNaN(Number(value))) {
+        return Promise.reject('Must be a number');
+      }
+      
+      const num = Number(value);
+      
+      if (field.min !== undefined && num < field.min) {
+        return Promise.reject(`Must be ≥ ${field.min}`);
+      }
+      if (field.max !== undefined && num > field.max) {
+        return Promise.reject(`Must be ≤ ${field.max}`);
+      }
+      
+      return Promise.resolve();
+    },
+  });
 
   return rules;
 };
