@@ -95,7 +95,14 @@ const SharedModal: React.FC<SharedModalProps> = ({
           highrisk: values.highrisk,
           lowrisk: values.lowrisk
         }
-      })
+      }),
+       isInterFlagEnabled: () => ({
+        intraConfig: {
+          hours: values.hours || null,
+          perc: values.perc || null,
+          items: values.items || null
+        }
+      }),
     };
 
     // return formatters[flagName as keyof typeof formatters]?.(values) ?? values;
@@ -208,6 +215,40 @@ const SharedModal: React.FC<SharedModalProps> = ({
             ]}
           >
             <Input type="number" min={1} max={100} />
+          </Form.Item>
+        </>
+      ),
+      isInterFlagEnabled: (
+        <>
+          <Form.Item
+            label="Hours"
+            name="hours"
+            rules={[
+              { required: true },
+              { validator: validators.hours }
+            ]}
+          >
+            <Input type="number" min={1} max={12} />
+          </Form.Item>
+          <Form.Item
+            label="Percentage"
+            name="perc"
+            rules={[
+              { required: true },
+              { validator: validators.perc },
+            ]}
+          >
+            <Input type="number" min={1} max={100} />
+          </Form.Item>
+          <Form.Item
+            label="Items"
+            name="items"
+            rules={[
+              { required: true },
+              { validator: validators.items },
+            ]}
+          >
+            <Input type="number" min={1} />
           </Form.Item>
         </>
       )

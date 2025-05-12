@@ -109,8 +109,8 @@
             "flagLevel": "sFeature"
         },
         {
-            "flagName": "isDogFlagEnabled",
-            "flagViewName": "Dog Flag",
+            "flagName": "isInterFlagEnabled",
+            "flagViewName": "Inter Flag",
             "flagLevel": "sFeature"
         },
         {

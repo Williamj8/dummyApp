@@ -101,9 +101,17 @@ const DropdownInputCard: React.FC = () => {
     
     if (currentFlagMap['isPipSpFlagEnabled'] === true) {
       errors['isPipSpFlagEnabled'] = !(
-        currentModalValues['isPipSpFlagEnabled']?.slow?.risk &&
-        currentModalValues['isPipSpFlagEnabled']?.slow?.highrisk &&
-        currentModalValues['isPipSpFlagEnabled']?.slow?.lowrisk
+        currentModalValues['isPipSpFlagEnabled']?.intraConfig?.hours &&
+        currentModalValues['isPipSpFlagEnabled']?.intraConfig?.perc &&
+        currentModalValues['isPipSpFlagEnabled']?.intraConfig?.items
+      );
+    } 
+
+    if (currentFlagMap['isInterFlagEnabled'] === true) {
+      errors['isInterFlagEnabled'] = !(
+        currentModalValues['isInterFlagEnabled']?.intraConfig?.hours !== null &&
+        currentModalValues['isInterFlagEnabled']?.intraConfig?.perc !== null &&
+        currentModalValues['isInterFlagEnabled']?.intraConfig?.items !== null
       );
     }
 
@@ -127,7 +135,8 @@ const DropdownInputCard: React.FC = () => {
         'is3PFlagEnabled',
         'isWfcFlagEnabled',
         'isOAmandaFlagEnabled',
-        'isPipSpFlagEnabled'
+        'isPipSpFlagEnabled',
+        'isInterFlagEnabled'
       ].includes(key)) {
         return !modalValues[key];
       }
@@ -207,19 +216,19 @@ const DropdownInputCard: React.FC = () => {
   const handleUpdate = () => {
     const currentErrors = validateForm(flagMap, modalValues);
     setFormErrors(currentErrors);
-
+  
     if (Object.values(currentErrors).some(error => error)) {
       message.error('Please complete all required fields');
       return;
     }
-
+  
     const changedFlags = flags
       .filter(flag => flagMap[flag.flagName] !== initialFlagValues.current[flag.flagName])
       .map(flag => ({
         ...flag,
         flagValue: flagMap[flag.flagName] ?? null,
       }));
-
+  
     const payload = {
       selectAll: false,
       divCode: selectedDiv?.value || null,
@@ -227,13 +236,16 @@ const DropdownInputCard: React.FC = () => {
       idList: idList.map(String),
       flags: changedFlags,
       ...modalValues,
-      ...(flagMap['isGF2agEnabled'] === true && { isGF2agEnabled: true }),
-      ...(flagMap['is3PFlagEnabled'] === true && { is3PFlagEnabled: true }),
-      ...(flagMap['isWfcFlagEnabled'] === true && { isWfcFlagEnabled: true }),
-      ...(flagMap['isOAmandaFlagEnabled'] === true && { isOAmandaFlagEnabled: true }),
-      ...(flagMap['isPipSpFlagEnabled'] === true && { isPipSpFlagEnabled: true })
+      ...(flagMap['isInterFlagEnabled'] === true && { 
+        isInterFlagEnabled: true,
+        intraConfig: modalValues['isInterFlagEnabled']?.intraConfig || {
+          hours: null,
+          perc: null,
+          items: null
+        }
+      })
     };
-
+  
     axios.post('/api/storePayload.json', payload)
       .then(() => {
         message.success('Updated successfully');

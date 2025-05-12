@@ -55,6 +55,8 @@ export const createDependentValidator = (
   if (error) throw new Error(error);
 };
 
+//  ---------------------------Store Bulk PiP-------------------------------------------------------
+
 export const validators = {
   risk: validateNumberRange(1, 10, 'Risk'),
   highLowRisk: validateNumberRange(1, 100, 'Risk level'),
@@ -67,5 +69,38 @@ export const validators = {
     form,
     'highrisk',
     (low, high) => low >= high ? 'Low risk must be less than high risk' : null
-  )
+  ),
+
+// intra
+hours: (_: any, value: number) => {
+  if (value === undefined || value === null) {
+    return Promise.reject('Please enter a value');
+  }
+  if (value < 1 || value > 12) {
+    return Promise.reject('Please enter value 1 to 12');
+  }
+  return Promise.resolve();
+},
+
+perc: (_: any, value: number) => {
+  if (value === undefined || value === null) {
+    return Promise.reject('Please enter a value');
+  }
+  if (value < 1 || value > 100) {
+    return Promise.reject('Please enter value 1 to 100');
+  }
+  return Promise.resolve();
+},
+
+items: (_: any, value: number) => {
+  if (value === undefined || value === null) {
+    return Promise.reject('Please enter a value');
+  }
+  if (value <= 0) {
+    return Promise.reject('Must be greater than zero');
+  }
+  return Promise.resolve();
+}
 };
+
+

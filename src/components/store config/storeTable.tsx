@@ -53,7 +53,8 @@ const StoreTable: React.FC<StoreTableProps> = ({
       'is3PFlagEnabled',
       'isWfcFlagEnabled',
       'isOAmandaFlagEnabled',
-      'isPipSpFlagEnabled'
+      'isPipSpFlagEnabled',
+      'isInterFlagEnabled'
     ].includes(flagName);
   };
 
