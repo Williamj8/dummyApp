@@ -24,9 +24,8 @@ interface TextFieldConfig {
   textViewName: string;
   textLevel: string;
   textType: string;
-  min?: number;
-  max?: number;
 }
+
 
 interface ApiResponse {
   div: Array<{ value: string; viewValue: string }>;
@@ -48,11 +47,13 @@ const DropdownInputCard: React.FC = () => {
   const [modalValues, setModalValues] = useState<Record<string, any>>({});
   const [formErrors, setFormErrors] = useState<Record<string, boolean>>({});
   const [hasChanges, setHasChanges] = useState(false);
-  const [values, setValues] = useState({
-    displayDays: undefined as number | undefined,
-    largeCap: undefined as number | undefined,
-    largeThreshold: undefined as number | undefined
-  });
+  const [textFields, setTextFields] = useState<TextFieldConfig[]>([]);
+  // const [values, setValues] = useState({
+  //   displayDays: undefined as number | undefined,
+  //   largeCap: undefined as number | undefined,
+  //   largeThreshold: undefined as number | undefined
+  // });
+  const [values, setValues] = useState<Record<string, number | undefined>>({});
 
   // Initialize data
   useEffect(() => {
@@ -69,6 +70,7 @@ const DropdownInputCard: React.FC = () => {
         });
         setFlagMap(initialMap);
         initialFlagValues.current = { ...initialMap };
+        setTextFields(response.data.textField);
       } catch (error) {
         message.error('Failed to load data');
       } finally {
@@ -203,6 +205,19 @@ const DropdownInputCard: React.FC = () => {
     }
   };
 
+  const prepareFields = (
+    fieldNames: string[],
+    constraints: Record<string, { min?: number; max?: number }>
+  ) => {
+    return textFields
+      .filter(field => fieldNames.includes(field.textName))
+      .map(field => ({
+        ...field,
+        ...constraints[field.textName],
+        required: false
+      }));
+  };
+
 
   // below cards input
   // const handleSettingChange = (name: string, value: number | undefined) => {
@@ -221,6 +236,15 @@ const DropdownInputCard: React.FC = () => {
       message.error('Please complete all required fields');
       return;
     }
+
+      //  textField payload
+  const textFieldPayload = textFields.map(field => ({
+    textName: field.textName,
+    textViewName: field.textViewName,
+    textLevel: field.textLevel,
+    textType: field.textType,
+    textValue: values[field.textName]?.toString() || " " // Empty string becomes single space
+  }));
   
     const changedFlags = flags
       .filter(flag => flagMap[flag.flagName] !== initialFlagValues.current[flag.flagName])
@@ -235,9 +259,9 @@ const DropdownInputCard: React.FC = () => {
       divName: selectedDiv?.viewValue || null,
       idList: idList.map(String),
       flags: changedFlags,
+      textField: textFieldPayload,
       ...modalValues,
       ...(flagMap['isInterFlagEnabled'] === true && { 
-        isInterFlagEnabled: true,
         intraConfig: modalValues['isInterFlagEnabled']?.intraConfig || {
           hours: null,
           perc: null,
@@ -258,7 +282,11 @@ const DropdownInputCard: React.FC = () => {
   const isUpdateDisabled = !hasChanges || Object.values(formErrors).some(error => error);
 
   return (
-    <Form form={form}>
+    <Form form={form}
+    onValuesChange={() => setHasChanges(true)}
+    validateTrigger={['onChange', 'onBlur']}
+     
+     >
       <Card style={{ width: '100%' }}>
         <Row gutter={16}>
           <Col span={10}>
@@ -319,22 +347,20 @@ const DropdownInputCard: React.FC = () => {
       />
 
 <FieldCard
-        title="Display Settings"
-        fields={[
-          { name: 'displayDays', label: 'Display Days (1-15)', min: 1, max: 15 }
-        ]}
-        values={values}
-        onChange={(name, value) => setValues(prev => ({ ...prev, [name]: value }))}
-      />
+      title="Display Settings"
+      fields={prepareFields(['displayDays'], {
+        displayDays: { min: 1, max: 15 }
+      })}
+      form={form}
+    />
       
       <FieldCard
         title="B2B Settings"
-        fields={[
-          { name: 'largeCap', label: 'Large Cap (0-100)', min: 0, max: 100 },
-          { name: 'largeThreshold', label: 'Large Threshold (1-999)', min: 1, max: 999 }
-        ]}
-        values={values}
-        onChange={(name, value) => setValues(prev => ({ ...prev, [name]: value }))}
+        fields={prepareFields(['largeCap', 'largeThreshold'], {
+          largeCap: { min: 0, max: 100 },
+          largeThreshold: { min: 1, max: 999 }
+        })}
+        form={form}
       />
 
     </Form>

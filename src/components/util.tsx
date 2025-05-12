@@ -1,4 +1,6 @@
 import { FormInstance } from "antd";
+import { Rule } from 'antd/lib/form';
+
 
 export const daysOptions = [
   { value: "monday", label: "Monday" },
@@ -104,3 +106,37 @@ items: (_: any, value: number) => {
 };
 
 
+//  ---------------------------Store Bulk txt fld-------------------------------------------------------
+
+
+
+interface FieldValidationConfig {
+  textViewName: string;
+  min?: number;
+  max?: number;
+  required?: boolean;
+}
+
+export const getFieldValidationRules = (
+  field: FieldValidationConfig
+): Rule[] => {
+  const rules: Rule[] = [];
+
+  if (field.required) {
+    rules.push({
+      required: true,
+      message: `${field.textViewName} is required`,
+    });
+  }
+
+  if (field.min !== undefined || field.max !== undefined) {
+    rules.push({
+      type: 'number',
+      min: field.min,
+      max: field.max,
+      message: `${field.textViewName} must be between ${field.min} and ${field.max}`,
+    });
+  }
+
+  return rules;
+};
