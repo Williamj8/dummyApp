@@ -1,3 +1,5 @@
+import { FormInstance } from "antd";
+
 export const daysOptions = [
   { value: "monday", label: "Monday" },
   { value: "tuesday", label: "Tuesday" },
@@ -19,3 +21,51 @@ export const validatess = (values: {capPool2: number; capPool3: number}) :
         capPool1,
     }
  }
+
+
+//  ---------------------------Store Bulk PiP-------------------------------------------------------
+
+// utils/formValidations.ts
+
+
+type ValidatorFn = (rule: any, value: any) => Promise<void>;
+
+export const validateNumberRange = (min: number, max: number, fieldName?: string): ValidatorFn => 
+  async (_, value) => {
+    const num = Number(value);
+    if (isNaN(num)) {
+      throw new Error(`${fieldName || 'Value'} must be a number`);
+    }
+    if (num < min || num > max) {
+      throw new Error(`${fieldName || 'Value'} must be between ${min}-${max}`);
+    }
+  };
+
+export const createDependentValidator = (
+  form: FormInstance,
+  compareField: string,
+  validate: (value: number, compareValue: number) => string | null
+): ValidatorFn => async (_, value) => {
+  const compareValue = Number(form.getFieldValue(compareField));
+  const currentValue = Number(value);
+  
+  if (isNaN(currentValue) || isNaN(compareValue)) return;
+  
+  const error = validate(currentValue, compareValue);
+  if (error) throw new Error(error);
+};
+
+export const validators = {
+  risk: validateNumberRange(1, 10, 'Risk'),
+  highLowRisk: validateNumberRange(1, 100, 'Risk level'),
+  highRiskGreaterThan: (form: FormInstance) => createDependentValidator(
+    form,
+    'lowrisk',
+    (high, low) => high <= low ? 'High risk must be greater than low risk' : null
+  ),
+  lowRiskLessThan: (form: FormInstance) => createDependentValidator(
+    form,
+    'highrisk',
+    (low, high) => low >= high ? 'Low risk must be less than high risk' : null
+  )
+};
