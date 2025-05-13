@@ -46,7 +46,7 @@
         {
             "flagName": "isGF2agEnabled",
             "flagViewName": "G2 Flag",
-            "flagLevel": "root"
+            "flagLevel": "sFeature"
         },
         {
             "flagName": "is3PFlagEnabled",
