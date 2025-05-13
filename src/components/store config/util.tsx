@@ -148,3 +148,42 @@ export const getFieldValidationRules = (field: FieldConfig): Rule[] => {
 
   return rules;
 };
+
+
+// ----------------------------------------spl flags-------------------------------------------------------------
+
+export const formatSpecialFlagPayload = (flagName: string, values: any) => {
+  const formatters: Record<string, (v: any) => any> = {
+    isGF2agEnabled: () => ({
+      tpl: values?.seqId ? [{
+        seqId: values.seqId || "1",
+        ventor: values.ventor || "Door"
+      }] : []
+    }),
+    is3PFlagEnabled: () => ({
+      tplP: values?.tplP ? [values.tplP] : []
+    }),
+    isWfcFlagEnabled: () => ({
+      wfcId: values?.wfcId || null
+    }),
+    isOAmandaFlagEnabled: () => ({
+      editLevel: values?.editLevel || null
+    }),
+    isPipSpFlagEnabled: () => ({
+      slow: values?.risk ? {
+        risk: values.risk,
+        highrisk: values.highrisk,
+        lowrisk: values.lowrisk
+      } : null
+    }),
+    isInterFlagEnabled: () => ({
+      intraConfig: values?.hours !== undefined ? {
+        hours: values.hours || null,
+        perc: values.perc || null,
+        items: values.items || null
+      } : null
+    }),
+  };
+
+  return formatters[flagName]?.(values) ?? {};
+};

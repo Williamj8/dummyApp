@@ -4,6 +4,8 @@ import axios from 'axios';
 import InputComponent from './input';
 import StoreTable from './storeTable';
 import FieldCard from './DisplayDaysCard';
+import { formatSpecialFlagPayload } from './util';
+import { SPECIAL_FLAGS } from './types';
 
 const { Option } = Select;
 
@@ -85,57 +87,47 @@ const DropdownInputCard: React.FC = () => {
   const validateForm = useCallback((currentFlagMap: Record<string, boolean | null>, currentModalValues: Record<string, any>) => {
     const errors: Record<string, boolean> = {};
   
-    const specialFlags = [
-      'isGF2agEnabled',
-      'is3PFlagEnabled',
-      'isWfcFlagEnabled',
-      'isOAmandaFlagEnabled',
-      'isPipSpFlagEnabled',
-      'isInterFlagEnabled'
-    ];
-  
-    specialFlags.forEach(flagName => {
+    SPECIAL_FLAGS.forEach(flagName => {
       if (currentFlagMap[flagName] === true) {
-        // Only set error if the flag is on AND modal values are invalid
+        const formattedValue = currentModalValues[flagName] || formatSpecialFlagPayload(flagName, {});
+        
         switch (flagName) {
           case 'isGF2agEnabled':
-            errors[flagName] = !currentModalValues[flagName]?.tpl?.[0]?.seqId;
+            errors[flagName] = !formattedValue.tpl?.length;
             break;
           case 'is3PFlagEnabled':
-            errors[flagName] = !currentModalValues[flagName]?.tplP?.length;
+            errors[flagName] = !formattedValue.tplP?.length;
             break;
           case 'isWfcFlagEnabled':
-            errors[flagName] = !currentModalValues[flagName]?.wfcId;
+            errors[flagName] = formattedValue.wfcId === null || formattedValue.wfcId === undefined;
             break;
           case 'isOAmandaFlagEnabled':
-            errors[flagName] = !currentModalValues[flagName]?.editLevel;
+            errors[flagName] = formattedValue.editLevel === null || formattedValue.editLevel === undefined;
             break;
           case 'isPipSpFlagEnabled':
-            errors[flagName] = !(
-              currentModalValues[flagName]?.slow?.risk &&
-              currentModalValues[flagName]?.slow?.highrisk &&
-              currentModalValues[flagName]?.slow?.lowrisk
+            errors[flagName] = !formattedValue.slow || (
+              formattedValue.slow.risk === undefined ||
+              formattedValue.slow.highrisk === undefined ||
+              formattedValue.slow.lowrisk === undefined
             );
             break;
           case 'isInterFlagEnabled':
-            errors[flagName] = !(
-              currentModalValues[flagName]?.intraConfig?.hours !== null &&
-              currentModalValues[flagName]?.intraConfig?.perc !== null &&
-              currentModalValues[flagName]?.intraConfig?.items !== null
+            errors[flagName] = !formattedValue.intraConfig || (
+              formattedValue.intraConfig.hours === null ||
+              formattedValue.intraConfig.perc === null ||
+              formattedValue.intraConfig.items === null
             );
             break;
           default:
             errors[flagName] = false;
         }
       } else {
-        // If flag is not on, no error
         errors[flagName] = false;
       }
     });
   
     return errors;
   }, []);
-
   // Check for changes and update form state
   const updateFormState = useCallback(() => {
     // Check flag changes
@@ -227,8 +219,11 @@ const DropdownInputCard: React.FC = () => {
   // };
 
   const handleModalSubmit = (flagName: string, values: any) => {
-    setModalValues(prev => ({ ...prev, [flagName]: values }));
+    const formattedValues = formatSpecialFlagPayload(flagName, values);
+    setModalValues(prev => ({ ...prev, [flagName]: formattedValues }));
   };
+
+
 
   const handleUpdate = () => {
     const currentErrors = validateForm(flagMap, modalValues);
@@ -238,18 +233,16 @@ const DropdownInputCard: React.FC = () => {
       message.error('Please complete all required fields');
       return;
     }
-
-      //  textField payload
-      const formValues = form.getFieldsValue();
-
-      const textFieldPayload = textFields.map(field => ({
-        textName: field.textName,
-        textViewName: field.textViewName,
-        textLevel: field.textLevel,
-        textType: field.textType,
-        textValue: formValues[field.textName]?.toString() || ''
-      }));
-      
+  
+    // textField payload
+    const formValues = form.getFieldsValue();
+    const textFieldPayload = textFields.map(field => ({
+      textName: field.textName,
+      textViewName: field.textViewName,
+      textLevel: field.textLevel,
+      textType: field.textType,
+      textValue: formValues[field.textName]?.toString() || ''
+    }));
   
     const changedFlags = flags
       .filter(flag => flagMap[flag.flagName] !== initialFlagValues.current[flag.flagName])
@@ -258,6 +251,12 @@ const DropdownInputCard: React.FC = () => {
         flagValue: flagMap[flag.flagName] ?? null,
       }));
   
+    // Build payload with all special flags
+    const specialFlagsPayload = SPECIAL_FLAGS.reduce((acc, flagName) => {
+      const formattedValue = modalValues[flagName] || formatSpecialFlagPayload(flagName, {});
+      return { ...acc, ...formattedValue };
+    }, {});
+  
     const payload = {
       selectAll: false,
       divCode: selectedDiv?.value || null,
@@ -265,14 +264,7 @@ const DropdownInputCard: React.FC = () => {
       idList: idList.map(String),
       flags: changedFlags,
       textField: textFieldPayload,
-      ...modalValues,
-      ...(flagMap['isInterFlagEnabled'] === true && { 
-        intraConfig: modalValues['isInterFlagEnabled']?.intraConfig || {
-          hours: null,
-          perc: null,
-          items: null
-        }
-      })
+      ...specialFlagsPayload
     };
   
     axios.post('/api/storePayload.json', payload)
@@ -283,6 +275,9 @@ const DropdownInputCard: React.FC = () => {
       })
       .catch(() => message.error('Failed to update'));
   };
+
+
+
 
   const isUpdateDisabled = !hasChanges || Object.values(formErrors).some(error => error);
 

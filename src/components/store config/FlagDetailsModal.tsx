@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Modal, Form, Input, Table, Select, Button } from 'antd';
 import axios from 'axios';
-import { validators } from '../util';
+import { validators } from './util';
 
 const { Option } = Select;
 

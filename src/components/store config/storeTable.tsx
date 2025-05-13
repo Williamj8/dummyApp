@@ -3,6 +3,7 @@ import { Card, Row, Col, Select, Button, Form } from 'antd';
 import SearchInput from './searchFilter';
 import SharedModal from './FlagDetailsModal';
 import './StoreTable.css';
+import { SPECIAL_FLAGS } from './types';
 
 const { Option } = Select;
 
@@ -48,16 +49,10 @@ const StoreTable: React.FC<StoreTableProps> = ({
   };
 
   const isSpecialFlag = (flagName: string) => {
-    return [
-      'isGF2agEnabled',
-      'is3PFlagEnabled',
-      'isWfcFlagEnabled',
-      'isOAmandaFlagEnabled',
-      'isPipSpFlagEnabled',
-      'isInterFlagEnabled'
-    ].includes(flagName);
+    return SPECIAL_FLAGS.includes(flagName);
   };
 
+  
   const renderFlagSelect = (flag: FlagType) => {
     const isSpecial = isSpecialFlag(flag.flagName);
     const isFlagOn = flagMap[flag.flagName] === true;

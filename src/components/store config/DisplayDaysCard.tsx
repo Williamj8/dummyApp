@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, Form, Input, Row, Col, FormInstance } from 'antd';
 import { Rule } from 'antd/lib/form';
-import {getFieldValidationRules} from '../util'
+import {getFieldValidationRules} from './util'
 
 interface FieldConfig {
   textName: string;
