@@ -84,39 +84,55 @@ const DropdownInputCard: React.FC = () => {
   // Memoized validation function
   const validateForm = useCallback((currentFlagMap: Record<string, boolean | null>, currentModalValues: Record<string, any>) => {
     const errors: Record<string, boolean> = {};
-    
-    if (currentFlagMap['isGF2agEnabled'] === true) {
-      errors['isGF2agEnabled'] = !currentModalValues['isGF2agEnabled']?.tpl?.length;
-    }
-    
-    if (currentFlagMap['is3PFlagEnabled'] === true) {
-      errors['is3PFlagEnabled'] = !currentModalValues['is3PFlagEnabled']?.tplP?.length;
-    }
-    
-    if (currentFlagMap['isWfcFlagEnabled'] === true) {
-      errors['isWfcFlagEnabled'] = !currentModalValues['isWfcFlagEnabled']?.wfcId;
-    }
-    
-    if (currentFlagMap['isOAmandaFlagEnabled'] === true) {
-      errors['isOAmandaFlagEnabled'] = !currentModalValues['isOAmandaFlagEnabled']?.editLevel;
-    }
-    
-    if (currentFlagMap['isPipSpFlagEnabled'] === true) {
-      errors['isPipSpFlagEnabled'] = !(
-        currentModalValues['isPipSpFlagEnabled']?.intraConfig?.hours &&
-        currentModalValues['isPipSpFlagEnabled']?.intraConfig?.perc &&
-        currentModalValues['isPipSpFlagEnabled']?.intraConfig?.items
-      );
-    } 
-
-    if (currentFlagMap['isInterFlagEnabled'] === true) {
-      errors['isInterFlagEnabled'] = !(
-        currentModalValues['isInterFlagEnabled']?.intraConfig?.hours !== null &&
-        currentModalValues['isInterFlagEnabled']?.intraConfig?.perc !== null &&
-        currentModalValues['isInterFlagEnabled']?.intraConfig?.items !== null
-      );
-    }
-
+  
+    const specialFlags = [
+      'isGF2agEnabled',
+      'is3PFlagEnabled',
+      'isWfcFlagEnabled',
+      'isOAmandaFlagEnabled',
+      'isPipSpFlagEnabled',
+      'isInterFlagEnabled'
+    ];
+  
+    specialFlags.forEach(flagName => {
+      if (currentFlagMap[flagName] === true) {
+        // Only set error if the flag is on AND modal values are invalid
+        switch (flagName) {
+          case 'isGF2agEnabled':
+            errors[flagName] = !currentModalValues[flagName]?.tpl?.[0]?.seqId;
+            break;
+          case 'is3PFlagEnabled':
+            errors[flagName] = !currentModalValues[flagName]?.tplP?.length;
+            break;
+          case 'isWfcFlagEnabled':
+            errors[flagName] = !currentModalValues[flagName]?.wfcId;
+            break;
+          case 'isOAmandaFlagEnabled':
+            errors[flagName] = !currentModalValues[flagName]?.editLevel;
+            break;
+          case 'isPipSpFlagEnabled':
+            errors[flagName] = !(
+              currentModalValues[flagName]?.slow?.risk &&
+              currentModalValues[flagName]?.slow?.highrisk &&
+              currentModalValues[flagName]?.slow?.lowrisk
+            );
+            break;
+          case 'isInterFlagEnabled':
+            errors[flagName] = !(
+              currentModalValues[flagName]?.intraConfig?.hours !== null &&
+              currentModalValues[flagName]?.intraConfig?.perc !== null &&
+              currentModalValues[flagName]?.intraConfig?.items !== null
+            );
+            break;
+          default:
+            errors[flagName] = false;
+        }
+      } else {
+        // If flag is not on, no error
+        errors[flagName] = false;
+      }
+    });
+  
     return errors;
   }, []);
 
@@ -126,31 +142,17 @@ const DropdownInputCard: React.FC = () => {
     const flagChanges = Object.keys(flagMap).some(
       key => flagMap[key] !== initialFlagValues.current[key]
     );
-    
+  
     // Check other changes
     const otherChanges = !!selectedDiv || idList.length > 0;
-    
-    // Check modal values for active flags
-    const modalChanges = Object.keys(flagMap).some(key => {
-      if (flagMap[key] === true && [
-        'isGF2agEnabled',
-        'is3PFlagEnabled',
-        'isWfcFlagEnabled',
-        'isOAmandaFlagEnabled',
-        'isPipSpFlagEnabled',
-        'isInterFlagEnabled'
-      ].includes(key)) {
-        return !modalValues[key];
-      }
-      return false;
-    });
-
-    // Update hasChanges
-    setHasChanges(flagChanges || otherChanges || modalChanges);
-
-    // Update form errors
+  
+    // Check if all required modal values are present for active special flags
     const newErrors = validateForm(flagMap, modalValues);
     setFormErrors(newErrors);
+  
+    // Update hasChanges
+    setHasChanges(flagChanges || otherChanges || 
+      Object.keys(modalValues).some(key => modalValues[key] !== undefined));
   }, [flagMap, selectedDiv, idList, modalValues, validateForm]);
 
   // Update form state when relevant state changes

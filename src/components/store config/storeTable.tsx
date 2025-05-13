@@ -61,7 +61,7 @@ const StoreTable: React.FC<StoreTableProps> = ({
   const renderFlagSelect = (flag: FlagType) => {
     const isSpecial = isSpecialFlag(flag.flagName);
     const isFlagOn = flagMap[flag.flagName] === true;
-    const hasError = formErrors[flag.flagName];
+    const hasError = isFlagOn && formErrors[flag.flagName];
 
     return (
       <Form.Item
