@@ -6,13 +6,14 @@ import StoreTable from './storeTable';
 import FieldCard from './DisplayDaysCard';
 import { formatSpecialFlagPayload } from './util';
 import { SPECIAL_FLAGS } from './types';
+import './StoreTable.css';
 
 const { Option } = Select;
 
 interface DivType {
   value: string;
   viewValue: string;
-} 
+}
 
 interface FlagType {
   flagName: string;
@@ -86,11 +87,11 @@ const DropdownInputCard: React.FC = () => {
   // Memoized validation function
   const validateForm = useCallback((currentFlagMap: Record<string, boolean | null>, currentModalValues: Record<string, any>) => {
     const errors: Record<string, boolean> = {};
-  
+
     SPECIAL_FLAGS.forEach(flagName => {
       if (currentFlagMap[flagName] === true) {
         const formattedValue = currentModalValues[flagName] || formatSpecialFlagPayload(flagName, {});
-        
+
         switch (flagName) {
           case 'isGF2agEnabled':
             errors[flagName] = !formattedValue.tpl?.length;
@@ -125,7 +126,7 @@ const DropdownInputCard: React.FC = () => {
         errors[flagName] = false;
       }
     });
-  
+
     return errors;
   }, []);
   // Check for changes and update form state
@@ -134,16 +135,16 @@ const DropdownInputCard: React.FC = () => {
     const flagChanges = Object.keys(flagMap).some(
       key => flagMap[key] !== initialFlagValues.current[key]
     );
-  
+
     // Check other changes
     const otherChanges = !!selectedDiv || idList.length > 0;
-  
+
     // Check if all required modal values are present for active special flags
     const newErrors = validateForm(flagMap, modalValues);
     setFormErrors(newErrors);
-  
+
     // Update hasChanges
-    setHasChanges(flagChanges || otherChanges || 
+    setHasChanges(flagChanges || otherChanges ||
       Object.keys(modalValues).some(key => modalValues[key] !== undefined));
   }, [flagMap, selectedDiv, idList, modalValues, validateForm]);
 
@@ -193,7 +194,7 @@ const DropdownInputCard: React.FC = () => {
       const newFlagMap = { ...prev, [flagName]: parsedValue };
       return newFlagMap;
     });
-    
+
     if (parsedValue !== true) {
       setModalValues(prev => ({ ...prev, [flagName]: undefined }));
     }
@@ -228,12 +229,12 @@ const DropdownInputCard: React.FC = () => {
   const handleUpdate = () => {
     const currentErrors = validateForm(flagMap, modalValues);
     setFormErrors(currentErrors);
-  
+
     if (Object.values(currentErrors).some(error => error)) {
       message.error('Please complete all required fields');
       return;
     }
-  
+
     // textField payload
     const formValues = form.getFieldsValue();
     const textFieldPayload = textFields.map(field => ({
@@ -243,20 +244,20 @@ const DropdownInputCard: React.FC = () => {
       textType: field.textType,
       textValue: formValues[field.textName]?.toString() || ''
     }));
-  
+
     const changedFlags = flags
       .filter(flag => flagMap[flag.flagName] !== initialFlagValues.current[flag.flagName])
       .map(flag => ({
         ...flag,
         flagValue: flagMap[flag.flagName] ?? null,
       }));
-  
+
     // Build payload with all special flags
     const specialFlagsPayload = SPECIAL_FLAGS.reduce((acc, flagName) => {
       const formattedValue = modalValues[flagName] || formatSpecialFlagPayload(flagName, {});
       return { ...acc, ...formattedValue };
     }, {});
-  
+
     const payload = {
       selectAll: false,
       divCode: selectedDiv?.value || null,
@@ -266,7 +267,7 @@ const DropdownInputCard: React.FC = () => {
       textField: textFieldPayload,
       ...specialFlagsPayload
     };
-  
+
     axios.post('/api/storePayload.json', payload)
       .then(() => {
         message.success('Updated successfully');
@@ -283,12 +284,35 @@ const DropdownInputCard: React.FC = () => {
 
   return (
     <Form form={form}
-    onValuesChange={() => setHasChanges(true)}
-    validateTrigger={['onChange', 'onBlur']}
-     
-     >
+      onValuesChange={() => setHasChanges(true)}
+      validateTrigger={['onChange', 'onBlur']}
+
+    >
+
       <Card style={{ width: '100%' }}>
-        <Row gutter={16}>
+        <Row gutter={16} align="middle" className="input-selector-row">
+          {/* Input Column - ~55% (13/24) */}
+
+          <Col span={13} className="input-column" style={{ maxWidth: '49.5%', flex: '0 0 49.5%' }}>
+            <InputComponent
+              placeholder="Enter numeric IDs"
+              value={inputValue}
+              idList={idList}
+              onChange={setInputValue}
+              onKeyDown={handleInputKeyDown}
+              onRemoveId={removeId}
+              disabled={!!selectedDiv}
+            />
+          </Col>
+
+          {/* Divider Column - ~4% (1/24) */}
+          <Col span={1}>
+            <div className="centered-divider">
+              <span className="divider-text"></span>
+            </div>
+          </Col>
+
+          {/* Select Column - ~41% (10/24) */}
           <Col span={10}>
             {selectedDiv ? (
               <Tag closable onClose={handleClearDiv}>
@@ -296,8 +320,8 @@ const DropdownInputCard: React.FC = () => {
               </Tag>
             ) : (
               <Select
-                style={{ width: '100%' }}
                 placeholder={loading ? 'Loading...' : 'Select division'}
+                style={{ width: '100%' }}
                 loading={loading}
                 onChange={handleSelectDiv}
                 showSearch
@@ -314,17 +338,6 @@ const DropdownInputCard: React.FC = () => {
                 ))}
               </Select>
             )}
-          </Col>
-          <Col span={14}>
-            <InputComponent
-              placeholder="Enter numeric IDs"
-              value={inputValue}
-              idList={idList}
-              onChange={setInputValue}
-              onKeyDown={handleInputKeyDown}
-              onRemoveId={removeId}
-              disabled={!!selectedDiv}
-            />
           </Col>
         </Row>
       </Card>
@@ -346,22 +359,29 @@ const DropdownInputCard: React.FC = () => {
         formErrors={formErrors}
       />
 
-<FieldCard
+<Row gutter={[16, 24]} style={{ marginBottom: 24 }}>
+  <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+
+    <FieldCard
       title="Display Settings"
       fields={prepareFields(['displayDays'], {
         displayDays: { min: 1, max: 15 }
       })}
       form={form}
     />
-      
-      <FieldCard
-        title="B2B Settings"
-        fields={prepareFields(['largeCap', 'largeThreshold'], {
-          largeCap: { min: 0, max: 100 },
-          largeThreshold: { min: 1, max: 999 }
-        })}
-        form={form}
-      />
+  </Col>
+  
+  <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+    <FieldCard
+      title="B2B Settings"
+      fields={prepareFields(['largeCap', 'largeThreshold'], {
+        largeCap: { min: 0, max: 100 },
+        largeThreshold: { min: 1, max: 999 }
+      })}
+      form={form}
+    />
+  </Col>
+</Row>
 
     </Form>
   );

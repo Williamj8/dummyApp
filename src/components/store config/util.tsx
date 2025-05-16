@@ -155,10 +155,10 @@ export const getFieldValidationRules = (field: FieldConfig): Rule[] => {
 export const formatSpecialFlagPayload = (flagName: string, values: any) => {
   const formatters: Record<string, (v: any) => any> = {
     isGF2agEnabled: () => ({
-      tpl: values?.seqId ? [{
-        seqId: values.seqId || "1",
-        ventor: values.ventor || "Door"
-      }] : []
+      tpl: [{
+        seqId: values?.seqId || "1",
+        ventor: values?.ventor || "Door"
+      }]
     }),
     is3PFlagEnabled: () => ({
       tplP: values?.tplP ? [values.tplP] : []
