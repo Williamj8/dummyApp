@@ -7,12 +7,14 @@ import FieldCard from './DisplayDaysCard';
 import { formatSpecialFlagPayload } from './util';
 import { SPECIAL_FLAGS } from './types';
 import './StoreTable.css';
+import './StoreTable.css';
 
 const { Option } = Select;
 
 interface DivType {
   value: string;
   viewValue: string;
+}
 }
 
 interface FlagType {
@@ -88,9 +90,11 @@ const DropdownInputCard: React.FC = () => {
   const validateForm = useCallback((currentFlagMap: Record<string, boolean | null>, currentModalValues: Record<string, any>) => {
     const errors: Record<string, boolean> = {};
 
+
     SPECIAL_FLAGS.forEach(flagName => {
       if (currentFlagMap[flagName] === true) {
         const formattedValue = currentModalValues[flagName] || formatSpecialFlagPayload(flagName, {});
+
 
         switch (flagName) {
           case 'isGF2agEnabled':
@@ -127,6 +131,7 @@ const DropdownInputCard: React.FC = () => {
       }
     });
 
+
     return errors;
   }, []);
   // Check for changes and update form state
@@ -136,14 +141,18 @@ const DropdownInputCard: React.FC = () => {
       key => flagMap[key] !== initialFlagValues.current[key]
     );
 
+
     // Check other changes
     const otherChanges = !!selectedDiv || idList.length > 0;
+
 
     // Check if all required modal values are present for active special flags
     const newErrors = validateForm(flagMap, modalValues);
     setFormErrors(newErrors);
 
+
     // Update hasChanges
+    setHasChanges(flagChanges || otherChanges ||
     setHasChanges(flagChanges || otherChanges ||
       Object.keys(modalValues).some(key => modalValues[key] !== undefined));
   }, [flagMap, selectedDiv, idList, modalValues, validateForm]);
@@ -195,6 +204,7 @@ const DropdownInputCard: React.FC = () => {
       return newFlagMap;
     });
 
+
     if (parsedValue !== true) {
       setModalValues(prev => ({ ...prev, [flagName]: undefined }));
     }
@@ -230,10 +240,12 @@ const DropdownInputCard: React.FC = () => {
     const currentErrors = validateForm(flagMap, modalValues);
     setFormErrors(currentErrors);
 
+
     if (Object.values(currentErrors).some(error => error)) {
       message.error('Please complete all required fields');
       return;
     }
+
 
     // textField payload
     const formValues = form.getFieldsValue();
@@ -245,6 +257,7 @@ const DropdownInputCard: React.FC = () => {
       textValue: formValues[field.textName]?.toString() || ''
     }));
 
+
     const changedFlags = flags
       .filter(flag => flagMap[flag.flagName] !== initialFlagValues.current[flag.flagName])
       .map(flag => ({
@@ -252,11 +265,13 @@ const DropdownInputCard: React.FC = () => {
         flagValue: flagMap[flag.flagName] ?? null,
       }));
 
+
     // Build payload with all special flags
     const specialFlagsPayload = SPECIAL_FLAGS.reduce((acc, flagName) => {
       const formattedValue = modalValues[flagName] || formatSpecialFlagPayload(flagName, {});
       return { ...acc, ...formattedValue };
     }, {});
+
 
     const payload = {
       selectAll: false,
@@ -267,6 +282,7 @@ const DropdownInputCard: React.FC = () => {
       textField: textFieldPayload,
       ...specialFlagsPayload
     };
+
 
     axios.post('/api/storePayload.json', payload)
       .then(() => {
@@ -378,6 +394,10 @@ const DropdownInputCard: React.FC = () => {
         formErrors={formErrors}
       />
 
+<Row gutter={[16, 24]} style={{ marginBottom: 24 }}>
+  <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+
+    <FieldCard
 <Row gutter={[16, 24]} style={{ marginBottom: 24 }}>
   <Col xs={24} sm={24} md={12} lg={12} xl={12}>
 
