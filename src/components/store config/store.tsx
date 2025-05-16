@@ -15,7 +15,6 @@ interface DivType {
   value: string;
   viewValue: string;
 }
-}
 
 interface FlagType {
   flagName: string;
@@ -152,7 +151,6 @@ const DropdownInputCard: React.FC = () => {
 
 
     // Update hasChanges
-    setHasChanges(flagChanges || otherChanges ||
     setHasChanges(flagChanges || otherChanges ||
       Object.keys(modalValues).some(key => modalValues[key] !== undefined));
   }, [flagMap, selectedDiv, idList, modalValues, validateForm]);
@@ -394,10 +392,7 @@ const DropdownInputCard: React.FC = () => {
         formErrors={formErrors}
       />
 
-<Row gutter={[16, 24]} style={{ marginBottom: 24 }}>
-  <Col xs={24} sm={24} md={12} lg={12} xl={12}>
-
-    <FieldCard
+    
 <Row gutter={[16, 24]} style={{ marginBottom: 24 }}>
   <Col xs={24} sm={24} md={12} lg={12} xl={12}>
 
