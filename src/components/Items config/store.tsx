@@ -303,21 +303,11 @@ const DropdownInputCard: React.FC = () => {
 
     >
 
+// Main component
 <Card style={{ width: '100%' }}>
-  <Row gutter={16} align="middle" className="input-selector-row">
-    {/* Input Column - Responsive width */}
-    <Col 
-      xs={24} 
-      sm={15} 
-      md={14} 
-      lg={13} 
-      style={{ 
-        maxWidth: '100%',
-        flex: '1 1 auto',
-        marginBottom: 16, // Mobile margin
-        ...(window.innerWidth >= 576 && { marginBottom: 0 }) 
-      }}
-    >
+  <Row gutter={16} align="middle" style={{ minHeight: '64px' }}>
+    {/* Input Column - 60% width */}
+    <Col xs={24} sm={14} md={14} lg={14}>
       <InputComponent
         placeholder="Enter numeric IDs"
         value={inputValue}
@@ -331,22 +321,21 @@ const DropdownInputCard: React.FC = () => {
 
     {/* Divider Column - Hidden on mobile */}
     <Col xs={0} sm={1} md={1} lg={1}>
-      <div className="centered-divider">
-        <span className="divider-text"></span>
+      <div style={{
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div style={{
+          borderLeft: '1px solid #E5E5E5',
+          height: '56px'
+        }} />
       </div>
     </Col>
 
-    {/* Select Column - Responsive width */}
-    <Col 
-      xs={24} 
-      sm={8} 
-      md={9} 
-      lg={10}
-      style={{
-        marginTop: 16, // Mobile margin
-        ...(window.innerWidth >= 576 && { marginTop: 0 })
-      }}
-    >
+    {/* Select Column - 40% width */}
+    <Col xs={24} sm={9} md={9} lg={9}>
       {selectedDiv ? (
         <Tag closable onClose={handleClearDiv}>
           {selectedDiv.viewValue}

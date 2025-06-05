@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Form, Modal, Select, Input } from "antd";
-import {daysOptions, validatess} from './store config/util';
+import {daysOptions, validatess} from './Items config/util';
 
 interface SettingsDialogProps {
   visible: boolean;

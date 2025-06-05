@@ -134,3 +134,18 @@
     margin-bottom: 0;
   }
 }
+
+
+/* InputComponent.css */
+.input-component-container {
+  position: relative;
+}
+
+.tags-container {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 8px;
+  z-index: 1;
+}

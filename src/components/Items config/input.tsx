@@ -21,23 +21,22 @@ const InputComponent: React.FC<InputComponentProps> = ({
   onRemoveId,
 }) => {
   return (
-    <div>
-    <Input
-      placeholder={placeholder}
-      value={value}
-      onChange={(e) => onChange?.(e.target.value)}
-      onKeyDown={onKeyDown}
-      disabled={disabled}
-      style={{ padding: "10px" }}  // Minimal inline style remains
-    />
-    <div className="tag-container">
-      {idList.map(id => (
-        <Tag key={id} closable onClose={() => onRemoveId?.(id)}>
-          {id}
-        </Tag>
-      ))}
+    <div className="input-component-container">
+      <Input
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange?.(e.target.value)}
+        onKeyDown={onKeyDown}
+        disabled={disabled}
+      />
+      <div className="tags-container">
+        {idList.map(id => (
+          <Tag key={id} closable onClose={() => onRemoveId?.(id)}>
+            {id}
+          </Tag>
+        ))}
+      </div>
     </div>
-  </div>
   );
 };
 
