@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import CapacityManagementButton from './components/button';
 import FormComponent from './components/form';
 import DropdownInputCard from './components/Items config/store';
-import TrackerTable from './components/track/trackerTable';
+import { RequestDataTable } from './components/track/trackerTable';
 
 const { Meta } = Card;
 
@@ -17,7 +17,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/capacity-management" element={<CapacityManagementButton />} />
           <Route path="/dropdown-input" element={<DropdownInputCard />} />
-          <Route path="/TrackerTable" element={<TrackerTable />} />
+          <Route path="/TrackerTable" element={<RequestDataTable  />} />
         </Routes>
       </div>
     </Router>

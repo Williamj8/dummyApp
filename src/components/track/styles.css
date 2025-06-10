@@ -1,0 +1,53 @@
+/* src/styles/tableStyles.css */
+.reusable-table {
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #DDD9D5;
+  border-collapse: separate; /* Changed for border control */
+  border-spacing: 0;
+  font-family: sans-serif;
+}
+
+.reusable-table thead {
+  background-color: #FAF9F8;
+}
+
+.reusable-table thead tr {
+  border-bottom: 1px solid #E5E4E3;
+}
+
+.reusable-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 500;
+  color: #333;
+  border: none;
+  position: relative;
+}
+
+.reusable-table td {
+  padding: 12px 16px;
+  border: none;
+}
+
+/* Zebra striping */
+.reusable-table tbody tr:nth-child(odd) {
+  background-color: #fff;
+}
+
+.reusable-table tbody tr:nth-child(even) {
+  background-color: #FAF9F8;
+}
+
+/* First column right border */
+.reusable-table tbody td:first-child {
+  border-right: 1px solid #E5E4E3;
+}
+
+/* Remove all hover effects */
+.reusable-table tr {
+  transition: none;
+}
+.reusable-table tr:hover {
+  background-color: inherit !important;
+}
