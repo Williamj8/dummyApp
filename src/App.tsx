@@ -30,7 +30,7 @@ function HomePage() {
       <Link to="/capacity-management">
         <Card
           hoverable
-          style={{ width: 300 }}
+          style={{ width: 200 }}
           cover={
             <img
               alt="Capacity Management"
