@@ -26,7 +26,7 @@ function App() {
 
 function HomePage() {
   return (
-    <div style={{ display: 'flex', justifyContent: 'right', gap: '20px', padding: '20px' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', padding: '20px' }}>
       <Link to="/capacity-management">
         <Card
           hoverable
