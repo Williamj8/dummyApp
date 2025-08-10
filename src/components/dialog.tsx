@@ -52,7 +52,7 @@ const CapacityManagementSettingsDialog: React.FC<SettingsDialogProps> = ({
         onClose();
       })
       .catch((error) => {
-        console.error("Validation failed:", error);
+        console.error("Validation is failed:", error);
       });
   };
 
